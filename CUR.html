@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Central Union Railroad – Startseite</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #121212;
+      color: #FFD700;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      text-align: center;
+      padding: 40px 20px 20px 20px;
+    }
+    header h1 {
+      font-size: 3em;
+      margin: 0;
+      text-shadow: 0 0 10px #FFD70099;
+    }
+    header h2 {
+      font-size: 1.4em;
+      color: #FFDC73;
+      margin-top: 10px;
+      text-shadow: 0 0 6px #FFD70088;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #000;
+      padding: 10px 0;
+      border-top: 2px solid #FFD700;
+      border-bottom: 2px solid #FFD700;
+    }
+    nav a {
+      color: #FFD700;
+      text-decoration: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: white;
+    }
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #FFD70033;
+    }
+    .brett {
+      background-color: #000;
+      border: 2px solid #FFD70055;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 40px;
+    }
+    .brett h3 {
+      margin-top: 0;
+      font-size: 1.5em;
+      color: #FFD700;
+      text-shadow: 0 0 5px #FFD70066;
+    }
+    .brett textarea {
+      width: 100%;
+      height: 120px;
+      background: #111;
+      border: 1px solid #FFD70044;
+      color: #FFD700;
+      padding: 10px;
+      border-radius: 6px;
+      resize: vertical;
+      font-family: monospace;
+    }
+    .brett small {
+      color: #888;
+      display: block;
+      margin-top: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #FFD700;
+      background: #1f1f1f;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #FFD70033;
+      text-align: left;
+    }
+    th {
+      background: #2a2a2a;
+      text-shadow: 0 0 8px #FFD70088;
+    }
+    tr:hover {
+      background: #292929;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Central Union Railroad</h1>
+    <h2>User Control Panel</h2>
+  </header>
+
+  <nav>
+    <a href="CUR.html">🏠 Startseite</a>
+    <a href="fahrten.html">🚂 Fahrbetrieb</a>
+    <a href="regeln.html">📜 Regeln</a>
+  </nav>
+
+  <main>
+    <section class="brett">
+      <h3>📌 Schwarzes Brett</h3>
+      <textarea id="brettText" placeholder="Hier kannst du Infos posten…"></textarea>
+      <small>Nur lokal gespeichert – nicht öffentlich synchronisiert.</small>
+    </section>
+
+    <section>
+      <h3>👷 Arbeiter & Züge im Dienst</h3>
+      <table id="dienstTabelle">
+        <thead>
+          <tr>
+            <th>Spieler</th>
+            <th>Zug</th>
+            <th>Start</th>
+            <th>Ziel</th>
+            <th>Einnahmen</th>
+            <th>Letztes Update</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    // Daten von der Fahrtenseite laden
+    const fahrten = JSON.parse(localStorage.getItem("fahrten")) || [];
+    const tbody = document.querySelector("#dienstTabelle tbody");
+
+    fahrten.forEach(e => {
+      const row = `<tr>
+        <td>${e.fahrer}</td>
+        <td>${e.zug}</td>
+        <td>${e.start}</td>
+        <td>${e.ziel}</td>
+        <td>$${e.geld.toFixed(2)}</td>
+        <td>${e.zeit}</td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+
+    // Schwarzes Brett speichern
+    const brett = document.getElementById("brettText");
+    brett.value = localStorage.getItem("brettText") || "";
+    brett.addEventListener("input", () => {
+      localStorage.setItem("brettText", brett.value);
+    });
+  </script>
+
+</body>
+</html>
+
