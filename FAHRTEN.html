@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Central Union Railroad – Fahrbetrieb</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #121212;
+      color: #FFD700;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background: #000;
+      padding: 12px;
+      text-align: center;
+      border-bottom: 2px solid #FFD700;
+    }
+    nav a {
+      color: #FFD700;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #fff;
+    }
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      background-color: #1a1a1a;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #FFD70033;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #FFD700AA;
+    }
+    .btn-group {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .btn-group button {
+      padding: 10px 25px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+    .btn-ein {
+      background: #00cc66;
+      color: black;
+    }
+    .btn-aus {
+      background: #cc0000;
+      color: white;
+    }
+    form {
+      display: none;
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      margin-top: 10px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+      border: 1px solid #FFD70033;
+      background: #111;
+      color: #FFD700;
+    }
+    button[type="submit"] {
+      background: #FFD700;
+      color: #000;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #FFD70044;
+    }
+    th {
+      background-color: #2a2a2a;
+      text-shadow: 0 0 8px #FFD70099;
+    }
+    tr:hover {
+      background-color: #292929;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="CUR.html">🏠 Startseite</a>
+  <a href="fahrten.html">🚂 Fahrbetrieb</a>
+  <a href="regeln.html">📜 Regeln</a>
+</nav>
+
+<main>
+  <h1>Fahrbetrieb – Dienststatus</h1>
+
+  <div class="btn-group">
+    <button class="btn-ein" onclick="einstempeln()">✅ Einstempeln</button>
+    <button class="btn-aus" onclick="ausstempeln()">⛔ Ausstempeln</button>
+  </div>
+
+  <form id="dienstForm">
+    <label>👤 Mitarbeitername:</label>
+    <input type="text" id="name" required>
+
+    <label>🚂 Zugname:</label>
+    <input type="text" id="zug" required>
+
+    <label>📍 Startbahnhof:</label>
+    <input type="text" id="start" required>
+
+    <label>🎯 Zielbahnhof:</label>
+    <input type="text" id="ziel" required>
+
+    <label>🛤️ Route:</label>
+    <textarea id="route" required></textarea>
+
+    <label>🚛 Transporttyp:</label>
+    <select id="typ" required>
+      <option value="">-- bitte auswählen --</option>
+      <option>Passagierbetrieb</option>
+      <option>Warentransport</option>
+      <option>Amtstransport</option>
+      <option>Eigentransport</option>
+      <option>Schwerlastzug</option>
+      <option>Frachtzug</option>
+      <option>First-class Transport</option>
+    </select>
+
+    <button type="submit">Fahrt eintragen</button>
+  </form>
+
+  <table id="dienstTabelle">
+    <thead>
+      <tr>
+        <th>Mitarbeiter</th>
+        <th>Zug</th>
+        <th>Transporttyp</th>
+        <th>Start</th>
+        <th>Ziel</th>
+        <th>Aktueller Standort</th>
+        <th>Letztes Update</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</main>
+
+<script>
+  const dienstForm = document.getElementById("dienstForm");
+  const dienstTabelle = document.querySelector("#dienstTabelle tbody");
+  let dienste = JSON.parse(localStorage.getItem("dienste")) || [];
+
+  function aktualisiereTabelle() {
+    dienstTabelle.innerHTML = "";
+    dienste.forEach(dienst => {
+      const row = `<tr>
+        <td>${dienst.name}</td>
+        <td>${dienst.zug}</td>
+        <td>${dienst.typ}</td>
+        <td>${dienst.start}</td>
+        <td>${dienst.ziel}</td>
+        <td>${dienst.route}</td>
+        <td>${dienst.zeit}</td>
+      </tr>`;
+      dienstTabelle.innerHTML += row;
+    });
+  }
+
+  function einstempeln() {
+    dienstForm.style.display = "block";
+  }
+
+  function ausstempeln() {
+    const name = prompt("Name des Mitarbeiters zum Ausstempeln:");
+    if (!name) return;
+    dienste = dienste.filter(d => d.name !== name);
+    localStorage.setItem("dienste", JSON.stringify(dienste));
+    aktualisiereTabelle();
+    dienstForm.style.display = "none";
+  }
+
+  dienstForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const neuerEintrag = {
+      name: document.getElementById("name").value,
+      zug: document.getElementById("zug").value,
+      typ: document.getElementById("typ").value,
+      start: document.getElementById("start").value,
+      ziel: document.getElementById("ziel").value,
+      route: document.getElementById("route").value,
+      zeit: new Date().toLocaleString()
+    };
+    const index = dienste.findIndex(d => d.name === neuerEintrag.name);
+    if (index !== -1) {
+      dienste[index] = neuerEintrag;
+    } else {
+      dienste.push(neuerEintrag);
+    }
+    localStorage.setItem("dienste", JSON.stringify(dienste));
+    dienstForm.reset();
+    aktualisiereTabelle();
+  });
+
+  aktualisiereTabelle();
+</script>
+
+</body>
+</html>
